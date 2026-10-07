@@ -810,7 +810,7 @@ const Overview = {
           <p class="ov-kicker">An open map of the AI buildout</p>
           <h1 class="ov-title">The AI supply chain, from rocks to tokens</h1>
           <p class="ov-lede">Every AI answer rests on a chain of ${st.layers} industries: mines and gas plants, lithography optics, chip fabs and memory, power grids, data centres, clouds and labs. This explorer maps the ${U.num(st.nodes, 0)} companies and markets in that chain, scores how tight each layer is, and shows who supplies whom. Click a layer below to open it on the map, or a company to see its numbers and sources.</p>
-          <p class="ov-byline">By Gustav Jes Iversen <span class="ov-dot">·</span> data as of <time datetime="${esc(m.today)}">${esc(Overview.date(m.today))}</time></p>
+          <p class="ov-byline">By GJI <span class="ov-dot">·</span> data as of <time datetime="${esc(m.today)}">${esc(Overview.date(m.today))}</time></p>
         </div>${Overview.glance(layers)}</div>
         ${Overview.statsHtml(st)}
       </header>
@@ -4575,7 +4575,7 @@ const Boot = {
     const m = APP.data.meta; U.$("#build-meta").textContent = `${m.node_count} nodes · ${m.edge_count} edges · built ${m.today}`;
     U.$("#build-meta").title = `${m.warnings} build warnings (stale or estimate-only figures) · schema ${m.schema_version}`;
     if (m.title) { U.$(".brand-name").textContent = m.title; document.title = m.title; }
-    if (m.public) U.$("#build-meta").innerHTML = `by <a href="/">Gustav Jes Iversen</a> · data ${U.esc(m.today)}`;
+    if (m.public) U.$("#build-meta").innerHTML = `by <a href="/">GJI</a> · data ${U.esc(m.today)}`;
     for (const [v, label] of Object.entries(m.tab_labels || {})) { const t = U.$(`#tab-${v}`); if (t) t.textContent = label; }
     const desc = document.querySelector('meta[name="description"]');
     if (desc && m.title) desc.setAttribute("content", `${m.title}: ${m.node_count} companies and markets across ${m.layer_count} layers, with bottleneck scores, flows and country exposure.`);
