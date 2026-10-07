@@ -1,0 +1,87 @@
+<title>AI Supply Chain Explorer</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://gustavjiversen01.github.io/ai-supply-chain/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The AI Supply Chain, from rocks to tokens">
+<meta property="og:description" content="An interactive map of the AI buildout: 340+ companies and markets across 17 layers, from minerals and EUV optics to chips, power, data centres, labs and the businesses buying tokens. Bottlenecks, money flows and countries, every number sourced and dated.">
+<meta property="og:url" content="https://gustavjiversen01.github.io/ai-supply-chain/">
+<meta property="og:image" content="https://gustavjiversen01.github.io/ai-supply-chain/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The AI Supply Chain, from rocks to tokens">
+<meta name="twitter:description" content="An interactive map of the AI buildout: 340+ companies and markets across 17 layers, from minerals and EUV optics to chips, power, data centres, labs and the businesses buying tokens. Bottlenecks, money flows and countries, every number sourced and dated.">
+<meta name="twitter:image" content="https://gustavjiversen01.github.io/ai-supply-chain/og.png">
+<meta name="description" content="An interactive map of the AI buildout: 340+ companies and markets across 17 layers, from minerals and EUV optics to chips, power, data centres, labs and the businesses buying tokens. Bottlenecks, money flows and countries, every number sourced and dated.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<div id="app" class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-name">AI Buildout Graph</span>
+      <span class="brand-sub" id="build-meta">loading…</span>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Views">
+      <button class="tab" data-view="overview" role="tab" id="tab-overview">Overview</button>
+      <button class="tab" data-view="map" role="tab" id="tab-map">Map</button>
+      <button class="tab" data-view="bottlenecks" role="tab" id="tab-bottlenecks">Bottlenecks</button>
+      <button class="tab" data-view="demand" role="tab" id="tab-demand">Demand 2×2</button>
+      <button class="tab" data-view="country" role="tab" id="tab-country">Countries</button>
+      <button class="tab" data-view="flows" role="tab" id="tab-flows" hidden>Flows</button>
+      <button class="tab" data-view="rates" role="tab" id="tab-rates" hidden>Cost of capital</button>
+      <button class="tab" data-view="findings" role="tab" id="tab-findings" hidden>Findings</button>
+    </nav>
+    <span class="live-badge" id="live-badge" hidden></span>
+    <div class="search">
+      <label class="visually-hidden" for="search-input">Search nodes</label>
+      <input id="search-input" type="search" placeholder="Search a company, product or ticker" autocomplete="off">
+      <div id="search-results" class="search-results" hidden></div>
+    </div>
+  </header>
+
+  <div class="filters" id="filters">
+    <label>Country <select id="f-country"><option value="">All</option></select></label>
+    <label>Ownership <select id="f-own"><option value="">All</option><option value="public">Public</option><option value="private">Private</option><option value="state">State</option><option value="foundation">Foundation</option><option value="subsidiary">Subsidiary</option></select></label>
+    <label>Segment <select id="f-kind"><option value="">All</option></select></label>
+    <label>Bottleneck ≥ <select id="f-bn"><option value="">any</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
+    <label class="check"><input type="checkbox" id="f-dk"> Denmark and Nordics</label>
+    <button class="btn-quiet" id="f-reset" type="button">Reset</button>
+    <span class="filter-count" id="filter-count"></span>
+  </div>
+
+  <main class="main">
+    <section class="view view-list view-overview" id="view-overview" hidden aria-label="Overview"></section>
+    <section class="view view-map" id="view-map">
+      <div class="map-wrap" id="map-wrap">
+        <canvas id="map-canvas" aria-label="Layered supply-chain map"></canvas>
+        <div class="map-controls">
+          <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
+          <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
+          <button type="button" id="zoom-fit" aria-label="Fit to view">fit</button>
+        </div>
+        <div class="map-legend" id="map-legend"></div>
+        <details class="howto" id="howto"><summary>How to read this map</summary>
+          <p>Each horizontal band is one layer of the buildout, raw materials at the bottom and the companies that buy tokens at the top. Circle size follows market cap (or market share for products and resources); colour is the chain segment. The left column summarises the layer: how full its capacity is, how fast capacity and demand are growing, valuation, risks. Click a band's title for the layer panel, a circle for the company panel. Dashed circles have estimates only; an amber dot marks a stale figure. Lines are supply, lease, finance and token flows; hover or select to isolate them.</p>
+        </details>
+        <div class="map-tip" id="map-tip" hidden></div>
+      </div>
+    </section>
+    <section class="view view-list" id="view-bottlenecks" hidden aria-label="Bottleneck ranking"></section>
+    <section class="view view-list" id="view-demand" hidden aria-label="Demand 2x2"></section>
+    <section class="view view-list" id="view-country" hidden aria-label="Countries"></section>
+    <section class="view view-list" id="view-flows" hidden aria-label="Flows between layers"></section>
+    <section class="view view-list" id="view-rates" hidden></section>
+    <section class="view view-list" id="view-findings" hidden></section>
+
+    <aside class="panel" id="panel" hidden aria-label="Detail panel">
+      <div class="panel-inner" id="panel-inner"></div>
+    </aside>
+  </main>
+  <div id="fallback" class="fallback" hidden></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.12.3/d3-sankey.min.js"></script>
+<script src="app.js"></script>

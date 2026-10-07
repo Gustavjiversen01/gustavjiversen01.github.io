@@ -43,6 +43,7 @@ const { Content } = await render(entry);
       )}
 
       <div class="mt-8 flex flex-wrap gap-4">
+        {repo && (
         <a
           href={repo}
           target="_blank"
@@ -54,6 +55,7 @@ const { Content } = await render(entry);
           </svg>
           Repository
         </a>
+        )}
         {demo && (
           <a
             href={demo}

@@ -1,0 +1,46 @@
+name: Live market data (AI supply chain)
+
+# Every 10 minutes on weekdays (UTC, covers Asian, European and US sessions), fetch quotes for the
+# companies and market signals in /ai-supply-chain/ and publish live.json to the `live-data` branch.
+# The page reads it from raw.githubusercontent.com, so no site rebuild or deploy is triggered.
+on:
+  schedule:
+    - cron: "*/10 * * * 1-5"
+    - cron: "0 */2 * * 0,6"   # weekends: bitcoin trades, keep the timestamp honest
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: live-data
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/live
+            public/ai-supply-chain/live_symbols.json
+          sparse-checkout-cone-mode: false
+      - name: Previous snapshot
+        run: |
+          git fetch --depth=1 origin live-data 2>/dev/null && git show origin/live-data:live.json > prev.json || echo '{}' > prev.json
+      - name: Fetch quotes
+        run: |
+          mkdir -p out
+          python3 scripts/live/fetch_live.py public/ai-supply-chain/live_symbols.json prev.json out/live.json
+      - name: Publish to live-data branch
+        run: |
+          [ -f out/live.json ] || { echo "no new snapshot"; exit 0; }
+          cd out
+          git init -q -b live-data
+          git config user.name "live-data bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add live.json
+          git commit -qm "Live market data $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" live-data
